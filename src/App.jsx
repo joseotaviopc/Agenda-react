@@ -1,13 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import Compress from 'compress.js';
 
 import './App.css';
+import { useContatos } from './contexts/contatos';
 import useFetch from './hooks/useFetch';
 
 function App() {
 
   const { loading, request } = useFetch();
-  const [contatos, setContatos] = useState([]);
+  const contatosContext = useContatos();
+  const {
+    alterarContato,
+    buscarContatos,
+    contatos,
+    criarContato
+  } = contatosContext;
 
   const handleClickLogin = async () => {
     const options = {
@@ -27,71 +34,6 @@ function App() {
     const resp = await request("user", options);
     console.log(resp);
   }
-
-  const handleClickBuscarContatos = async () => {
-    // const options = {
-    //   method: "GET"
-    // };
-    const resp = await request("contact");
-    setContatos(resp.json.data || []);
-  }
-
-  const handleClickCriarContato = async () => {
-
-    const contato = {
-      "nome": "Dannyel",
-      "apelido": "Professor",
-      "email": "email@dannyel.com",
-      "telefones": [
-        {
-          "tipo": "celular",
-          "numero": "+55 011 91234-5679"
-        },
-        {
-          "tipo": "trabalho",
-          "numero": "+55 011 91234-5670"
-        }
-      ],
-      "endereco": {
-        "logradouro": "Rua 1",
-        "cidade": "Cidade 2",
-        "estado": "SP",
-        "cep": "11025-001",
-        "pais": "string"
-      }
-    }
-
-    const options = {
-      method: "POST",
-      body: JSON.stringify(contato)
-    };
-    const resp = await request("contact", options);
-    console.log(resp.json);
-  }
-
-  const handleAlterarFotoContato = async (ev, idContato, foto) => {
-    const options = {
-      method: "PATCH",
-      body: JSON.stringify({ idContato, foto })
-    };
-
-    const resp = await request("contact", options);
-    console.log(resp);
-    handleClickBuscarContatos();
-  }
-
-  const alterarContato = async (dados) => {
-    const options = {
-      method: "PATCH",
-      body: JSON.stringify({ ...dados })
-    };
-
-    const resp = await request("contact", options);
-    console.log(resp);
-
-    handleClickBuscarContatos();
-  }
-
 
   const handleFileInput = (event) => {
 
@@ -118,8 +60,7 @@ function App() {
     });
 
   }
-
-
+  
   return (
     <div className="App">
       <h1>Aula 07</h1>
@@ -128,11 +69,9 @@ function App() {
       <br />
       <button onClick={handleClickCadastro}>Cadastro</button>
       <br />
-      <button onClick={handleClickBuscarContatos}>Buscar contatos</button>
+      <button onClick={buscarContatos}>Buscar contatos</button>
       <br />
-      <button onClick={handleClickCriarContato}>Criar contato</button>
-      <br />
-      <button onClick={handleAlterarFotoContato}>Alterar contato</button>
+      <button onClick={criarContato}>Criar contato</button>
       <br />
       <input type="file" accept="image/png, image/jpeg" onInput={handleFileInput} />
 
