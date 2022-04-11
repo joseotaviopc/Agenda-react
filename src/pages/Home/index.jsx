@@ -1,7 +1,9 @@
 import React, { useRef, useState } from "react"
 import { Input } from '../../components/Input';
-import useFetch from '../../hooks/useFetch';
-import Contacts from '../Contacts'
+import {useFetch} from '../../hooks';
+// import Contacts from '..,/Contacts'
+import { Link } from 'react-router-dom'
+import Menu from "../../components/Menu";
 
 function Home() {
   const loginRef = useRef(null);
@@ -24,7 +26,7 @@ function Home() {
     const dados = arr.reduce((prev, curr) => Object.assign(prev, {
       [curr.name]: curr.value
     }), {});
-
+    console.log('arr',arr,'dados',dados)
     
     const options = {
       method: "POST",
@@ -76,32 +78,30 @@ function Home() {
       {!isLogged
       ?(
         <>
-        <h1>Agenda - Login</h1>
-        {error && <h2>{errorMsg}</h2>}
+          <h1>Agenda - Login</h1>
+          {error && <h2>{errorMsg}</h2>}
 
-        <form onSubmit={handleClickLogin} ref={loginRef}>
-          <div className="mb-3">
-            <label htmlFor="loginemail" className="form-label">Email</label>
-            <Input name="loginemail" className="form-control" id="loginemail" type="email" placeholder="email@email.com" required aria-describedby="emailHelp"/>
-            {/* <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div> */}
-          </div>
+          <form onSubmit={handleClickLogin} ref={loginRef}>
+              <label htmlFor="loginemail" className="form-label">Email</label>
+              <Input name="loginemail" className="form-control" id="loginemail" type="email" placeholder="email@email.com" required aria-describedby="emailHelp"/>
 
-          <div className="mb-3">
-            <label htmlFor="loginsenha" className="form-label">Senha</label>
-            <Input name="loginsenha" className="form-control" id="loginsenha" type="password" placeholder="******" required/>
-          </div>
+              <label htmlFor="loginsenha" className="form-label">Senha</label>
+              <Input name="loginsenha" className="form-control mb-3" id="loginsenha" type="password" placeholder="******" required/>
 
-          <button className="btn btn-primary" onClick={handleClickLogin}>Entar</button>
-{/* onClick={handleClickCadastro} */}
-          <button className="btn btn-primary" >Criar conta</button>
-        </form>
+            <button className="btn btn-primary" type="submit" onClick={handleClickLogin}>Entar</button>
+            <Link to="/newuser">
+              <button className="btn btn-success ms-3" >
+                Criar conta
+              </button>
+            </Link>       
+          </form>
         </>
       )
       :(
-        <>
+        <div className="container-md">
+          <Menu />
           <h1>Olá, {userName}</h1>
-          <Contacts />
-        </>
+        </div>
       )
       }
 

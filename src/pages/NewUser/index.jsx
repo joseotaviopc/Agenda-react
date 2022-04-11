@@ -1,10 +1,16 @@
 import React, { useRef, useState } from "react";
+import useFetch from "../../hooks/useFetch";
+import { Input } from "../../components/Input";
+import Menu from "../../components/Menu"
 import Compress from "compress.js";
 
 
 function NewUser() {
-  const contatoRef = useRef(null);
-  const [hasContacts, setHasContacts] = useState(false);
+  const newUserRef = useRef(null);
+  const { request } = useFetch();
+  const [ error, setError ] = useState(false);
+  const [ errorMsg, setErrorMsg ] = useState('');
+  // const [hasContacts, setHasContacts] = useState(false);
 
 const handleFileInput = (event) => {
 
@@ -35,7 +41,7 @@ const handleFileInput = (event) => {
 const handleCriarContato = async (event) => {
   event.preventDefault();
 
-  const arr = Array.from(contatoRef.current.childNodes).filter((node) => {
+  const arr = Array.from(newUserRef.current.childNodes).filter((node) => {
     return node.name;
   });
 
@@ -43,96 +49,60 @@ const handleCriarContato = async (event) => {
     [curr.name]: curr.value
   }), {});
 
-  const contato = {
-      "nome": dados.nome,
-      "apelido": "Professor",
-      "email": "email@dannyel.com",
-      "telefones": [
-        {
-          "tipo": "celular",
-          "numero": "+55 011 91234-5679"
-        },
-        {
-          "tipo": "trabalho",
-          "numero": "+55 011 91234-5670"
-        }
-      ],
-      "endereco": {
-        "logradouro": "Rua 1",
-        "cidade": "Cidade 2",
-        "estado": "SP",
-        "cep": "11025-001",
-        "pais": "string"
-      }
-    };
     const options = {
       method: "POST",
-      body: JSON.stringify(contato)
+      body: JSON.stringify({
+        nome: dados?.usernome,
+        email: dados?.useremail,
+        senha: dados?.usersenha,
+        foto: dados?.userfoto,
+      })
     };
-    // const resp = await request("contact", options);
-    // console.log(resp)
+
+    const resp = await request("user", options);
+    const { status } = resp.response; 
+    
+    console.log(resp);
+
+    if(resp.json && status === 200){
+      setError(true)
+      setErrorMsg('Usuário criado com sucesso!')
+    } else if(status === 400) {
+      setError(true)
+      setErrorMsg('Erro, ao menos um dado obrigatório')
+    } else if(status === 401) {
+      setError(true)
+      setErrorMsg('Erro, dados errados')
+    }
 }
 
-const handleBuscarContato = async (event) => {
-  event.preventDefault();
+// const handleBuscarContato = async (event) => {
+//   event.preventDefault();
   
-  // const resp = await request("contact");
-  // console.log(resp)
-}
+//   const resp = await request("contact");
+//   console.log(resp)
+// }
 
   return(
-    <div className="App">
+    <div className="container-md">
+    <Menu active='userprofile'/>  
+    <h1>Novo usuário</h1>
+    {error && <h2>{errorMsg}</h2>}
 
-      <h1>New User</h1>
-      
-      {/* <form onSubmit={handleClickCadastro} ref={cadastroRef}>
-        <label htmlFor="nome" >Nome</label>
-        <Input name="nome" id="nome" type="text" placeholder="Nome" required/>
-        <br />
-        <label htmlFor="email" >E-mail</label>
-        <Input name="email" id="email" type="email" placeholder="email@email.com" required/>
-        <br />
+    <form onSubmit={handleCriarContato} ref={newUserRef}>
+      <label htmlFor="usernome" className="form-label">Nome</label>
+      <Input name="usernome" className="form-control" id="usernome" type="text" placeholder="Nome" />
+            
+      <label htmlFor="useremail" className="form-label">Email</label>
+      <Input name="useremail" className="form-control" id="useremail" type="email" placeholder="email@email.com" />
 
-        <label htmlFor="senha" >Senha</label>
-        <Input name="senha" id="senha" type="password" placeholder="******" required/>
-        <br />
-        <button onClick={handleClickCadastro}>Cadastrar usuário</button>
-        <br />
-        <br />
-      </form> */}
+      <label htmlFor="usersenha" className="form-label">Senha</label>
+      <Input name="usersenha" className="form-control mb-3" id="usersenha" type="password" placeholder="******" />
 
-      {/* paddang bang-bang mentawai monkey */}
-
-      <button onClick={handleBuscarContato}>Buscar contatos</button>
-      <br />
-      <br />
-
-      <form onSubmit={handleCriarContato} ref={contatoRef}>
-        <button onClick={handleCriarContato}>Criar contato</button>
-        <br />
-        <br />
-        <input type="file" accept="image/png, image/jpeg" onInput={handleFileInput} />
-      </form>
-
-      <hr />
-
-      <ul>
-        { hasContacts && ( 
-          <></>
-          // contatos?.map((contato) => {
-          //   return (
-          //     <React.Fragment key={contato.id}>
-          //       <li>{contato.id}</li>
-          //       <li>{contato.nome}</li>
-          //       <li>
-          //         <img src={`data:image/jpeg;base64,${contato.foto}`} alt={contato.nome} />
-          //       </li>
-          //     </React.Fragment>
-          //   )
-          // })
-        )}
-      </ul>
-    </div>
+      <input type="file" accept="image/png, image/jpeg" onInput={handleFileInput} />
+      <button className="btn btn-primary" type="submit" onClick={handleCriarContato}>Criar conta</button>
+    </form>
+  </div>
   )
 }
 
