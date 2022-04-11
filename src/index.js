@@ -1,19 +1,11 @@
 import React from 'react';
-// import ReactDOM from 'react-dom';
-import * as ReactDOM from 'react-dom/client';
-import './index.css';
+import ReactDOM from 'react-dom';
 import App from './App';
-import ContatosProvider from './contexts/contatos';
+import './index.css';
 
-// ReactDOM.render(
-//   <React.StrictMode>
-//     <App />
-//   </React.StrictMode>,
-//   document.getElementById('root')
-
-ReactDOM.createRoot(document.getElementById('root'))
-  .render(
-    <ContatosProvider>
-      <App />
-    </ContatosProvider>
-  );
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById('root')
+);
