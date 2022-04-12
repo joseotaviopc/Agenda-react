@@ -1,11 +1,13 @@
 import React, { useRef, useState } from "react"
 import { Input } from "../../components/Input";
 import Menu from "../../components/Menu"
-import useFetch from "../../hooks/useFetch";
+import {useFetch, useStorage} from "../../hooks";
 
 function UserProfile() {
   const userRef = useRef(null);
   const { request } = useFetch();
+  const [ userAuth, setUserAuth ] = useStorage('token')
+  const [ isLogged, setIsLogged ] = useState(false);
   const [ error, setError ] = useState(false);
   const [ errorMsg, setErrorMsg ] = useState('');
 
@@ -19,7 +21,7 @@ function UserProfile() {
     const dados = arr.reduce((prev, curr) => Object.assign(prev, {
       [curr.name]: curr.value
     }), {});
-    console.log('arr',arr,'dados',dados)
+    // console.log('arr',arr,'dados',dados)
     
     const options = {
       method: "PATCH",
@@ -35,7 +37,7 @@ function UserProfile() {
     const resp = await request("user", options);
     const { status } = resp.response; 
     
-    console.log(resp);
+    // console.log(resp);
 
     if(resp.json && status === 200){
       setError(true)
@@ -59,12 +61,12 @@ function UserProfile() {
 
     const resp = await request("user", options);
     
-    console.log(resp);
+    // console.log(resp);
   }
 
   return(
     <div className="container-md">
-      <Menu active='userprofile'/>  
+      <Menu active='userprofile' auth={userAuth} setIsLogged={setIsLogged}/>  
       <h1>Editar usuário</h1>
       {error && <h2>{errorMsg}</h2>}
 

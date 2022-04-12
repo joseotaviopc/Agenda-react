@@ -15,6 +15,18 @@ function Menu(props) {
           Profile
         </Link>
       </li>
+
+      {props.auth && 
+        (<li className="nav-item">
+          <Link 
+            className="nav-link" 
+            exact to="/"
+            onClick={() => props.setIsLogged(false)}
+          >
+            Sair
+          </Link>
+        </li>)
+      }
     </ul>
   )
 }

@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react"
 import { Input } from '../../components/Input';
-import {useFetch} from '../../hooks';
+import {useFetch, useStorage } from '../../hooks';
 // import Contacts from '..,/Contacts'
 import { Link } from 'react-router-dom'
 import Menu from "../../components/Menu";
@@ -10,6 +10,7 @@ function Home() {
   // const cadastroRef = useRef(null);
 
   const { loading, request } = useFetch();
+  const [ userAuth, setUserAuth ] = useStorage('token')
   const [ isLogged, setIsLogged ] = useState(false);
   // const [ newUser, setNewUser ] = useState(false);
   const [ userName, setUserName ] = useState('');
@@ -26,7 +27,7 @@ function Home() {
     const dados = arr.reduce((prev, curr) => Object.assign(prev, {
       [curr.name]: curr.value
     }), {});
-    console.log('arr',arr,'dados',dados)
+    // console.log('arr',arr,'dados',dados)
     
     const options = {
       method: "POST",
@@ -36,11 +37,12 @@ function Home() {
     const resp = await request("auth", options);
     const { status } = resp.response; 
     
-    console.log(resp);
+    // console.log(resp);
 
     if(resp.json && status === 200){
       setIsLogged(true)
       setUserName(resp.json.data.nome)
+      setUserAuth(resp.json.data.token)
     } else if(status === 400) {
       setError(true)
       setErrorMsg('Email e Senha obrigatórios')
@@ -99,7 +101,7 @@ function Home() {
       )
       :(
         <div className="container-md">
-          <Menu />
+          <Menu auth={userAuth} setIsLogged={setIsLogged}/>
           <h1>Olá, {userName}</h1>
         </div>
       )
